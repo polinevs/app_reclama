@@ -1,0 +1,6 @@
+streamlit
+pandas
+plotly
+bcrypt
+pillow
+qrcode
