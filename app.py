@@ -880,6 +880,30 @@ def pagina_clientes():
 # QR CODE
 # =========================================================
 
+
+def obter_url_base_padrao():
+    """
+    Define a URL base padrão para gerar QR Codes.
+
+    Em produção, recomenda-se configurar no Streamlit Cloud:
+    APP_BASE_URL = "https://seu-app.streamlit.app"
+
+    Também aceita variável de ambiente APP_BASE_URL.
+    """
+    try:
+        url_secrets = st.secrets.get("APP_BASE_URL", "")
+        if url_secrets:
+            return str(url_secrets).strip().rstrip("/")
+    except Exception:
+        pass
+
+    url_env = os.getenv("APP_BASE_URL", "")
+    if url_env:
+        return url_env.strip().rstrip("/")
+
+    return "http://localhost:8501"
+
+
 def gerar_url_portal_cliente(base_url, codigo_lote):
     """
     Gera a URL que será gravada no QR Code.
@@ -930,10 +954,16 @@ def bloco_qrcode_lote(titulo, codigo_lote, key_prefix):
 
     base_url = st.text_input(
         "URL base do sistema",
-        value="http://localhost:8501",
+        value=obter_url_base_padrao(),
         key=f"{key_prefix}_base_url",
         help="Em produção, troque pela URL real do Streamlit Cloud. Exemplo: https://seu-app.streamlit.app"
     )
+
+    if "localhost" in base_url or "127.0.0.1" in base_url:
+        st.warning(
+            "Atenção: este QR Code está usando localhost. "
+            "Se a aplicação já está publicada, troque pela URL real do Streamlit Cloud antes de baixar o QR."
+        )
 
     url_qr = gerar_url_portal_cliente(base_url, codigo_lote)
     qr_bytes = gerar_qrcode_png_bytes(url_qr)
@@ -1099,3 +1129,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
