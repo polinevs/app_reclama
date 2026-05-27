@@ -188,16 +188,16 @@ def mostrar_evidencias(reclamacao_id):
     evidencias = listar_evidencias_reclamacao(reclamacao_id)
 
     if not evidencias:
-        st.info("Nenhuma evidência enviada para esta reclamação.")
+        st.info("No se ha enviado ninguna evidencia para esta reclamación.")
         return
 
-    st.subheader("📷 Evidências enviadas")
+    st.subheader("📷 Evidencias enviadas")
 
     for evidencia in evidencias:
         _, nome_arquivo, caminho_arquivo, tipo_arquivo, data_upload = evidencia
 
-        st.write(f"**Arquivo:** {nome_arquivo}")
-        st.caption(f"Enviado em: {data_upload}")
+        st.write(f"**Archivo:** {nome_arquivo}")
+        st.caption(f"Enviado el: {data_upload}")
 
         if os.path.exists(caminho_arquivo):
             if tipo_arquivo and tipo_arquivo.startswith("image"):
@@ -205,13 +205,13 @@ def mostrar_evidencias(reclamacao_id):
             else:
                 with open(caminho_arquivo, "rb") as f:
                     st.download_button(
-                        label=f"Baixar {nome_arquivo}",
+                        label=f"Descargar {nome_arquivo}",
                         data=f,
                         file_name=nome_arquivo,
                         mime=tipo_arquivo or "application/octet-stream"
                     )
         else:
-            st.warning("Arquivo não encontrado na pasta de uploads.")
+            st.warning("Archivo no encontrado en la carpeta de uploads.")
 
         st.divider()
 
@@ -222,13 +222,13 @@ def mostrar_evidencias(reclamacao_id):
 
 def tela_login():
     st.title("🍑 SGR Frutas")
-    st.subheader("Sistema interno de gestão de reclamações")
+    st.subheader("Sistema interno de gestión de reclamaciones")
 
-    st.info("Esta área é exclusiva para a empresa. O cliente deve acessar o portal público via QR Code.")
+    st.info("Esta área es exclusiva para la empresa. El cliente debe acceder al portal público mediante QR Code.")
 
     with st.form("form_login"):
         email = st.text_input("E-mail")
-        senha = st.text_input("Senha", type="password")
+        senha = st.text_input("Contraseña", type="password")
         entrar = st.form_submit_button("Entrar")
 
     if entrar:
@@ -236,12 +236,12 @@ def tela_login():
 
         if usuario:
             st.session_state.usuario = usuario
-            st.success("Login realizado com sucesso.")
+            st.success("Inicio de sesión realizado correctamente.")
             st.rerun()
         else:
-            st.error("E-mail ou senha incorretos.")
+            st.error("E-mail o contraseña incorrectos.")
 
-    st.caption("Usuário inicial: admin@admin.com | Senha: admin123")
+    st.caption("Usuario inicial: admin@admin.com | Contraseña: admin123")
 
 
 # =========================================================
@@ -427,13 +427,13 @@ def menu_lateral():
     usuario = st.session_state.usuario
 
     st.sidebar.title("🍑 SGR Frutas")
-    st.sidebar.write(f"Usuário: **{usuario['nome']}**")
+    st.sidebar.write(f"Usuario: **{usuario['nome']}**")
     st.sidebar.write(f"Perfil: **{usuario['perfil']}**")
 
     opcoes = [
-        "Dashboard",
-        "Nova Reclamação Interna",
-        "Reclamações",
+        "Panel de control",
+        "Nueva reclamación interna",
+        "Reclamaciones",
         "Clientes",
         "Lotes"
     ]
@@ -441,10 +441,10 @@ def menu_lateral():
     pagina = st.sidebar.radio("Menu", opcoes)
 
     st.sidebar.divider()
-    st.sidebar.caption("Portal cliente:")
+    st.sidebar.caption("Portal del cliente:")
     st.sidebar.code("?portal=cliente")
 
-    if st.sidebar.button("Sair"):
+    if st.sidebar.button("Salir"):
         st.session_state.usuario = None
         st.rerun()
 
@@ -456,36 +456,36 @@ def menu_lateral():
 # =========================================================
 
 def pagina_dashboard():
-    st.title("📊 Dashboard")
+    st.title("📊 Panel de control")
 
     indicadores = obter_indicadores_dashboard()
 
     col1, col2, col3, col4 = st.columns(4)
 
-    col1.metric("Total de reclamações", indicadores["total"])
-    col2.metric("Abertas", indicadores["abertas"])
-    col3.metric("Resolvidas", indicadores["resolvidas"])
-    col4.metric("Alta gravidade", indicadores["alta"])
+    col1.metric("Total de reclamaciones", indicadores["total"])
+    col2.metric("Abiertas", indicadores["abertas"])
+    col3.metric("Resueltas", indicadores["resolvidas"])
+    col4.metric("Alta gravedad", indicadores["alta"])
 
     dados = listar_reclamacoes()
 
     if not dados:
-        st.info("Ainda não há reclamações cadastradas.")
+        st.info("Todavía no hay reclamaciones registradas.")
         return
 
     df = pd.DataFrame(dados, columns=[
         "ID",
         "Código",
         "Cliente",
-        "Produto",
-        "Variedade",
+        "Producto",
+        "Variedad",
         "Tipo",
-        "Categoria",
-        "Gravidade",
-        "Status",
-        "Setor",
-        "Data abertura",
-        "Prazo resposta"
+        "Categoría",
+        "Gravedad",
+        "Estado",
+        "Departamento",
+        "Fecha de apertura",
+        "Plazo de respuesta"
     ])
 
     st.divider()
@@ -493,36 +493,36 @@ def pagina_dashboard():
     col_a, col_b = st.columns(2)
 
     with col_a:
-        st.subheader("Reclamações por tipo")
+        st.subheader("Reclamaciones por tipo")
         grafico_tipo = df["Tipo"].value_counts().reset_index()
-        grafico_tipo.columns = ["Tipo", "Quantidade"]
-        fig = px.bar(grafico_tipo, x="Tipo", y="Quantidade")
+        grafico_tipo.columns = ["Tipo", "Cantidad"]
+        fig = px.bar(grafico_tipo, x="Tipo", y="Cantidad")
         st.plotly_chart(fig, use_container_width=True)
 
     with col_b:
-        st.subheader("Reclamações por gravidade")
-        grafico_gravidade = df["Gravidade"].value_counts().reset_index()
-        grafico_gravidade.columns = ["Gravidade", "Quantidade"]
-        fig = px.pie(grafico_gravidade, values="Quantidade", names="Gravidade")
+        st.subheader("Reclamaciones por gravedad")
+        grafico_gravidade = df["Gravedad"].value_counts().reset_index()
+        grafico_gravidade.columns = ["Gravedad", "Cantidad"]
+        fig = px.pie(grafico_gravidade, values="Cantidad", names="Gravedad")
         st.plotly_chart(fig, use_container_width=True)
 
     col_c, col_d = st.columns(2)
 
     with col_c:
-        st.subheader("Reclamações por produto")
-        grafico_produto = df["Produto"].value_counts().reset_index()
-        grafico_produto.columns = ["Produto", "Quantidade"]
-        fig = px.bar(grafico_produto, x="Produto", y="Quantidade")
+        st.subheader("Reclamaciones por producto")
+        grafico_produto = df["Producto"].value_counts().reset_index()
+        grafico_produto.columns = ["Producto", "Cantidad"]
+        fig = px.bar(grafico_produto, x="Producto", y="Cantidad")
         st.plotly_chart(fig, use_container_width=True)
 
     with col_d:
-        st.subheader("Reclamações por setor")
-        grafico_setor = df["Setor"].value_counts().reset_index()
-        grafico_setor.columns = ["Setor", "Quantidade"]
-        fig = px.bar(grafico_setor, x="Setor", y="Quantidade")
+        st.subheader("Reclamaciones por departamento")
+        grafico_setor = df["Departamento"].value_counts().reset_index()
+        grafico_setor.columns = ["Departamento", "Cantidad"]
+        fig = px.bar(grafico_setor, x="Departamento", y="Cantidad")
         st.plotly_chart(fig, use_container_width=True)
 
-    st.subheader("Últimas reclamações")
+    st.subheader("Últimas reclamaciones")
     st.dataframe(df.head(10), use_container_width=True)
 
 
@@ -531,18 +531,18 @@ def pagina_dashboard():
 # =========================================================
 
 def pagina_nova_reclamacao():
-    st.title("📥 Nova Reclamação Interna")
-    st.info("Use esta tela quando a reclamação for registrada pela própria empresa. O cliente deve usar o portal público via QR Code.")
+    st.title("📥 Nueva reclamación interna")
+    st.info("Utiliza esta pantalla cuando la reclamación sea registrada por la propia empresa. El cliente debe usar el portal público mediante QR Code.")
 
     clientes = listar_clientes()
     lotes = listar_lotes()
 
     if not clientes:
-        st.warning("Cadastre pelo menos um cliente antes de criar uma reclamação interna.")
+        st.warning("Registra al menos un cliente antes de crear una reclamación interna.")
         return
 
     clientes_dict = {
-        f"{cliente[1]} - {cliente[3] or 'Sem contato'}": cliente
+        f"{cliente[1]} - {cliente[3] or 'Sin contacto'}": cliente
         for cliente in clientes
     }
 
@@ -593,7 +593,7 @@ def pagina_nova_reclamacao():
     ]
 
     with st.form("form_nova_reclamacao"):
-        st.subheader("Dados do cliente")
+        st.subheader("Datos del cliente")
 
         cliente_selecionado = st.selectbox("Cliente", list(clientes_dict.keys()))
         cliente = clientes_dict[cliente_selecionado]
@@ -606,16 +606,16 @@ def pagina_nova_reclamacao():
         col1, col2 = st.columns(2)
 
         with col1:
-            numero_pedido = st.text_input("Número do pedido")
-            numero_albaran = st.text_input("Número do albarán")
+            numero_pedido = st.text_input("Número de pedido")
+            numero_albaran = st.text_input("Número de albarán")
 
         with col2:
-            data_entrega = st.date_input("Data de entrega")
-            quantidade_afetada = st.text_input("Quantidade afetada")
+            data_entrega = st.date_input("Fecha de entrega")
+            quantidade_afetada = st.text_input("Cantidad afectada")
 
-        st.subheader("Dados do produto")
+        st.subheader("Datos del producto")
 
-        usar_lote = st.checkbox("Selecionar lote cadastrado")
+        usar_lote = st.checkbox("Seleccionar lote registrado")
 
         codigo_lote = ""
         variedade = ""
@@ -628,29 +628,29 @@ def pagina_nova_reclamacao():
             produto = lote[2]
             variedade = lote[3]
 
-            st.info(f"Lote selecionado: {codigo_lote} | Produto: {produto} | Variedade: {variedade}")
+            st.info(f"Lote seleccionado: {codigo_lote} | Produto: {produto} | Variedade: {variedade}")
         else:
-            produto = st.selectbox("Produto", produtos)
-            variedade = st.text_input("Variedade")
-            codigo_lote = st.text_input("Código do lote")
+            produto = st.selectbox("Producto", produtos)
+            variedade = st.text_input("Variedad")
+            codigo_lote = st.text_input("Código del lote")
 
-        st.subheader("Dados da reclamação")
+        st.subheader("Datos de la reclamación")
 
-        tipo_reclamacao = st.selectbox("Tipo de reclamação", tipos_reclamacao)
-        descricao = st.text_area("Descrição do problema")
-        solucao_desejada = st.selectbox("Solução desejada", solucoes)
+        tipo_reclamacao = st.selectbox("Tipo de reclamación", tipos_reclamacao)
+        descricao = st.text_area("Descripción del problema")
+        solucao_desejada = st.selectbox("Solución deseada", solucoes)
 
         arquivos = st.file_uploader(
-            "Adicionar fotos/documentos",
+            "Añadir fotos/documentos",
             type=["jpg", "jpeg", "png", "webp", "pdf"],
             accept_multiple_files=True
         )
 
-        enviar = st.form_submit_button("Registrar reclamação")
+        enviar = st.form_submit_button("Registrar reclamación")
 
     if enviar:
         if not descricao:
-            st.error("Descreva o problema antes de registrar a reclamação.")
+            st.error("Describe el problema antes de registrar la reclamación.")
             return
 
         codigo = inserir_reclamacao(
@@ -676,10 +676,10 @@ def pagina_nova_reclamacao():
             for arquivo in arquivos:
                 salvar_evidencia(reclamacao_id, arquivo)
 
-        st.success(f"Reclamação registrada com sucesso! Código: {codigo}")
+        st.success(f"Reclamación registrada correctamente. Código: {codigo}")
 
         if arquivos:
-            st.success(f"{len(arquivos)} arquivo(s) salvo(s) como evidência.")
+            st.success(f"{len(arquivos)} archivo(s) guardado(s) como evidencia.")
 
 
 # =========================================================
@@ -687,63 +687,63 @@ def pagina_nova_reclamacao():
 # =========================================================
 
 def pagina_reclamacoes():
-    st.title("📋 Reclamações")
+    st.title("📋 Reclamaciones")
 
     dados = listar_reclamacoes()
 
     if not dados:
-        st.info("Nenhuma reclamação cadastrada.")
+        st.info("Ninguna reclamación registrada.")
         return
 
     df = pd.DataFrame(dados, columns=[
         "ID",
         "Código",
         "Cliente",
-        "Produto",
-        "Variedade",
+        "Producto",
+        "Variedad",
         "Tipo",
-        "Categoria",
-        "Gravidade",
-        "Status",
-        "Setor",
-        "Data abertura",
-        "Prazo resposta"
+        "Categoría",
+        "Gravedad",
+        "Estado",
+        "Departamento",
+        "Fecha de apertura",
+        "Plazo de respuesta"
     ])
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        filtro_status = st.selectbox("Filtrar por status", ["Todos"] + sorted(df["Status"].dropna().unique().tolist()))
+        filtro_status = st.selectbox("Filtrar por estado", ["Todos"] + sorted(df["Estado"].dropna().unique().tolist()))
 
     with col2:
-        filtro_gravidade = st.selectbox("Filtrar por gravidade", ["Todas"] + sorted(df["Gravidade"].dropna().unique().tolist()))
+        filtro_gravidade = st.selectbox("Filtrar por gravedad", ["Todas"] + sorted(df["Gravedad"].dropna().unique().tolist()))
 
     with col3:
-        filtro_setor = st.selectbox("Filtrar por setor", ["Todos"] + sorted(df["Setor"].dropna().unique().tolist()))
+        filtro_setor = st.selectbox("Filtrar por departamento", ["Todos"] + sorted(df["Departamento"].dropna().unique().tolist()))
 
     df_filtrado = df.copy()
 
     if filtro_status != "Todos":
-        df_filtrado = df_filtrado[df_filtrado["Status"] == filtro_status]
+        df_filtrado = df_filtrado[df_filtrado["Estado"] == filtro_status]
 
     if filtro_gravidade != "Todas":
-        df_filtrado = df_filtrado[df_filtrado["Gravidade"] == filtro_gravidade]
+        df_filtrado = df_filtrado[df_filtrado["Gravedad"] == filtro_gravidade]
 
     if filtro_setor != "Todos":
-        df_filtrado = df_filtrado[df_filtrado["Setor"] == filtro_setor]
+        df_filtrado = df_filtrado[df_filtrado["Departamento"] == filtro_setor]
 
     st.dataframe(df_filtrado, use_container_width=True)
 
     st.divider()
-    st.subheader("🔎 Detalhe e atualização da reclamação")
+    st.subheader("🔎 Detalle y actualización de la reclamación")
 
     ids = df_filtrado["ID"].tolist()
 
     if not ids:
-        st.warning("Nenhuma reclamação encontrada com os filtros selecionados.")
+        st.warning("No se encontró ninguna reclamación con los filtros seleccionados.")
         return
 
-    reclamacao_id = st.selectbox("Selecione o ID da reclamação", ids)
+    reclamacao_id = st.selectbox("Selecciona el ID de la reclamación", ids)
 
     reclamacao = buscar_reclamacao_por_id(reclamacao_id)
 
@@ -754,27 +754,27 @@ def pagina_reclamacoes():
             st.markdown(f"### {reclamacao[1]}")
             st.write(f"**Cliente:** {reclamacao[3]}")
             st.write(f"**E-mail:** {reclamacao[4]}")
-            st.write(f"**Telefone:** {reclamacao[5]}")
+            st.write(f"**Teléfono:** {reclamacao[5]}")
             st.write(f"**Pedido:** {reclamacao[6]}")
             st.write(f"**Albarán:** {reclamacao[7]}")
             st.write(f"**Lote:** {reclamacao[8]}")
             st.write(f"**Produto:** {reclamacao[9]}")
             st.write(f"**Variedade:** {reclamacao[10]}")
-            st.write(f"**Data de entrega:** {reclamacao[11]}")
+            st.write(f"**Fecha de entrega:** {reclamacao[11]}")
 
         with col_b:
             st.write(f"**Tipo:** {reclamacao[12]}")
-            st.write(f"**Categoria:** {reclamacao[13]}")
-            st.write(f"**Gravidade:** {reclamacao[14]}")
-            st.write(f"**Status atual:** {reclamacao[18]}")
-            st.write(f"**Setor responsável:** {reclamacao[19]}")
-            st.write(f"**Prazo de resposta:** {reclamacao[20]}")
-            st.write(f"**Data abertura:** {reclamacao[21]}")
+            st.write(f"**Categoría:** {reclamacao[13]}")
+            st.write(f"**Gravedad:** {reclamacao[14]}")
+            st.write(f"**Estado actual:** {reclamacao[18]}")
+            st.write(f"**Departamento responsable:** {reclamacao[19]}")
+            st.write(f"**Plazo de respuesta:** {reclamacao[20]}")
+            st.write(f"**Fecha de apertura:** {reclamacao[21]}")
 
-        st.subheader("Descrição do problema")
+        st.subheader("Descripción del problema")
         st.write(reclamacao[15])
 
-        st.subheader("Solução desejada")
+        st.subheader("Solución deseada")
         st.write(reclamacao[17])
 
         st.divider()
@@ -782,7 +782,7 @@ def pagina_reclamacoes():
         mostrar_evidencias(reclamacao_id)
 
         st.divider()
-        st.subheader("Atualizar status")
+        st.subheader("Actualizar estado")
 
         status_opcoes = [
             "Nova",
@@ -799,10 +799,10 @@ def pagina_reclamacoes():
             "Improcedente"
         ]
 
-        novo_status = st.selectbox("Novo status", status_opcoes)
-        comentario = st.text_area("Comentário da alteração")
+        novo_status = st.selectbox("Nuevo estado", status_opcoes)
+        comentario = st.text_area("Comentario de la modificación")
 
-        if st.button("Atualizar status"):
+        if st.button("Actualizar estado"):
             usuario = st.session_state.usuario["nome"]
 
             sucesso = atualizar_status_reclamacao(
@@ -813,10 +813,10 @@ def pagina_reclamacoes():
             )
 
             if sucesso:
-                st.success("Status atualizado com sucesso.")
+                st.success("Estado actualizado correctamente.")
                 st.rerun()
             else:
-                st.error("Erro ao atualizar status.")
+                st.error("Error al actualizar el estado.")
 
 
 # =========================================================
@@ -826,21 +826,21 @@ def pagina_reclamacoes():
 def pagina_clientes():
     st.title("👥 Clientes")
 
-    with st.expander("Cadastrar novo cliente", expanded=True):
+    with st.expander("Registrar nuevo cliente", expanded=True):
         with st.form("form_cliente"):
-            nome_empresa = st.text_input("Nome da empresa")
+            nome_empresa = st.text_input("Nombre de la empresa")
             cif_nif = st.text_input("CIF/NIF")
-            nome_contato = st.text_input("Nome do contato")
+            nome_contato = st.text_input("Nombre de contacto")
             email = st.text_input("E-mail")
-            telefone = st.text_input("Telefone")
+            telefone = st.text_input("Teléfono")
             cidade = st.text_input("Cidade")
             pais = st.text_input("País", value="España")
 
-            salvar = st.form_submit_button("Salvar cliente")
+            salvar = st.form_submit_button("Guardar cliente")
 
         if salvar:
             if not nome_empresa:
-                st.error("Informe o nome da empresa.")
+                st.error("Introduce el nombre de la empresa.")
             else:
                 inserir_cliente(
                     nome_empresa,
@@ -851,10 +851,10 @@ def pagina_clientes():
                     cidade,
                     pais
                 )
-                st.success("Cliente cadastrado com sucesso.")
+                st.success("Cliente registrado correctamente.")
                 st.rerun()
 
-    st.subheader("Clientes cadastrados")
+    st.subheader("Clientes registrados")
 
     dados = listar_clientes()
 
@@ -863,16 +863,16 @@ def pagina_clientes():
             "ID",
             "Empresa",
             "CIF/NIF",
-            "Contato",
+            "Contacto",
             "E-mail",
-            "Telefone",
+            "Teléfono",
             "Cidade",
             "País"
         ])
 
         st.dataframe(df, use_container_width=True)
     else:
-        st.info("Nenhum cliente cadastrado.")
+        st.info("Ningún cliente registrado.")
 
 
 
@@ -953,10 +953,10 @@ def bloco_qrcode_lote(titulo, codigo_lote, key_prefix):
     st.subheader(titulo)
 
     base_url = st.text_input(
-        "URL base do sistema",
+        "URL base del sistema",
         value=obter_url_base_padrao(),
         key=f"{key_prefix}_base_url",
-        help="Em produção, troque pela URL real do Streamlit Cloud. Exemplo: https://seu-app.streamlit.app"
+        help="En producción, cambia esta URL por la URL real de Streamlit Cloud. Ejemplo: https://tu-app.streamlit.app"
     )
 
     if "localhost" in base_url or "127.0.0.1" in base_url:
@@ -974,10 +974,10 @@ def bloco_qrcode_lote(titulo, codigo_lote, key_prefix):
         st.image(qr_bytes, caption=f"Lote: {codigo_lote}", width=220)
 
     with col_info:
-        st.write("**Link gravado no QR Code:**")
+        st.write("**Enlace guardado en el QR Code:**")
         st.code(url_qr)
         st.download_button(
-            label="⬇️ Baixar QR Code PNG",
+            label="⬇️ Descargar QR Code PNG",
             data=qr_bytes,
             file_name=f"qrcode_lote_{codigo_lote}.png",
             mime="image/png",
@@ -1008,23 +1008,23 @@ def pagina_lotes():
     if "ultimo_lote_qr" not in st.session_state:
         st.session_state.ultimo_lote_qr = ""
 
-    with st.expander("Cadastrar novo lote", expanded=True):
+    with st.expander("Registrar nuevo lote", expanded=True):
         with st.form("form_lote"):
-            codigo_lote = st.text_input("Código do lote")
-            produto = st.selectbox("Produto", produtos)
-            variedade = st.text_input("Variedade")
+            codigo_lote = st.text_input("Código del lote")
+            produto = st.selectbox("Producto", produtos)
+            variedade = st.text_input("Variedad")
             finca = st.text_input("Finca")
-            data_colheita = st.date_input("Data de colheita")
+            data_colheita = st.date_input("Fecha de cosecha")
             data_confeccao = st.date_input("Data de confección")
-            camara_fria = st.text_input("Câmara fria")
-            temperatura_saida = st.text_input("Temperatura de saída")
-            observacoes = st.text_area("Observações")
+            camara_fria = st.text_input("Cámara frigorífica")
+            temperatura_saida = st.text_input("Temperatura de salida")
+            observacoes = st.text_area("Observaciones")
 
-            salvar = st.form_submit_button("Salvar lote e gerar QR Code")
+            salvar = st.form_submit_button("Guardar lote y generar QR Code")
 
         if salvar:
             if not codigo_lote:
-                st.error("Informe o código do lote.")
+                st.error("Introduce el código del lote.")
             else:
                 try:
                     inserir_lote(
@@ -1040,40 +1040,40 @@ def pagina_lotes():
                     )
 
                     st.session_state.ultimo_lote_qr = codigo_lote
-                    st.success("Lote cadastrado com sucesso. O QR Code já está disponível abaixo.")
+                    st.success("Lote registrado correctamente. El QR Code ya está disponible abajo.")
 
                 except Exception as e:
-                    st.error(f"Erro ao cadastrar lote: {e}")
+                    st.error(f"Error al registrar el lote: {e}")
 
     if st.session_state.ultimo_lote_qr:
         st.divider()
         bloco_qrcode_lote(
-            titulo="✅ QR Code do último lote cadastrado",
+            titulo="✅ QR Code del último lote registrado",
             codigo_lote=st.session_state.ultimo_lote_qr,
             key_prefix="ultimo_lote"
         )
 
     st.divider()
-    st.subheader("Lotes cadastrados")
+    st.subheader("Lotes registrados")
 
     dados = listar_lotes()
 
     if dados:
         df = pd.DataFrame(dados, columns=[
             "ID",
-            "Código do lote",
-            "Produto",
-            "Variedade",
+            "Código del lote",
+            "Producto",
+            "Variedad",
             "Finca",
-            "Data colheita",
+            "Fecha de cosecha",
             "Data confección",
-            "Câmara fria"
+            "Cámara frigorífica"
         ])
 
         st.dataframe(df, use_container_width=True)
 
         st.divider()
-        st.subheader("🔳 Gerar QR Code de um lote já cadastrado")
+        st.subheader("🔳 Generar QR Code de un lote ya registrado")
 
         opcoes_lotes = {
             f"{linha[1]} - {linha[2]} - {linha[3] or ''}": linha[1]
@@ -1081,7 +1081,7 @@ def pagina_lotes():
         }
 
         lote_escolhido_label = st.selectbox(
-            "Selecione um lote",
+            "Selecciona un lote",
             list(opcoes_lotes.keys()),
             key="select_lote_qr"
         )
@@ -1089,13 +1089,13 @@ def pagina_lotes():
         codigo_lote_escolhido = opcoes_lotes[lote_escolhido_label]
 
         bloco_qrcode_lote(
-            titulo="QR Code do lote selecionado",
+            titulo="QR Code del lote seleccionado",
             codigo_lote=codigo_lote_escolhido,
             key_prefix="lote_selecionado"
         )
 
     else:
-        st.info("Nenhum lote cadastrado.")
+        st.info("Ningún lote registrado.")
 
 # =========================================================
 # MAIN
@@ -1115,11 +1115,11 @@ def main():
     else:
         pagina = menu_lateral()
 
-        if pagina == "Dashboard":
+        if pagina == "Panel de control":
             pagina_dashboard()
-        elif pagina == "Nova Reclamação Interna":
+        elif pagina == "Nueva reclamación interna":
             pagina_nova_reclamacao()
-        elif pagina == "Reclamações":
+        elif pagina == "Reclamaciones":
             pagina_reclamacoes()
         elif pagina == "Clientes":
             pagina_clientes()
