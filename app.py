@@ -901,7 +901,7 @@ def obter_url_base_padrao():
     if url_env:
         return url_env.strip().rstrip("/")
 
-    return "http://localhost:8501"
+    return "https://reclamacionesbajocinca.streamlit.app/"
 
 
 def gerar_url_portal_cliente(base_url, codigo_lote):
@@ -913,7 +913,7 @@ def gerar_url_portal_cliente(base_url, codigo_lote):
     base_url = (base_url or "").strip().rstrip("/")
 
     if not base_url:
-        base_url = "http://localhost:8501"
+        base_url = "https://reclamacionesbajocinca.streamlit.app/"
 
     parametros = urlencode({
         "portal": "cliente",
